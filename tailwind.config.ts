@@ -34,6 +34,10 @@ export default {
           orange: "hsl(var(--ios-orange))",
           cyan: "hsl(var(--ios-cyan))",
           green: "hsl(var(--ios-green))",
+          pink: "hsl(var(--ios-pink))",
+          purple: "hsl(var(--ios-purple))",
+          indigo: "hsl(var(--ios-indigo))",
+          yellow: "hsl(var(--ios-yellow))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",

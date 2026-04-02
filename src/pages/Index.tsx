@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble } from "lucide-react";
+import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare } from "lucide-react";
+import ShortcutsTab from "./ShortcutsTab";
 
 const EXAMPLE_PROMPT = "At 1am open ChatGPT and start a chat";
 
@@ -39,7 +40,10 @@ const EXISTING_AUTOMATIONS = [
   },
 ];
 
+type ActiveTab = "shortcuts" | "automation" | "gallery";
+
 export default function RoutineWizard() {
+  const [activeTab, setActiveTab] = useState<ActiveTab>("automation");
   const [inputValue, setInputValue] = useState(EXAMPLE_PROMPT);
   const [phase, setPhase] = useState<"input" | "loading" | "result">("input");
   const [automations, setAutomations] = useState(EXISTING_AUTOMATIONS);
@@ -77,27 +81,35 @@ export default function RoutineWizard() {
       {/* iOS Status area spacer */}
       <div className="h-12" />
 
-      {/* Header */}
-      <div className="px-5 pb-1 flex items-center justify-between">
-        {phase === "result" && (
-          <button onClick={handleReset} className="text-ios-blue text-[17px] font-normal absolute right-5">
-            +
-          </button>
-        )}
-      </div>
-      <div className="px-5">
-        <h1 className="text-[34px] font-bold tracking-tight text-foreground">Automation</h1>
-      </div>
-
       {/* Content */}
-      <div className="flex-1 px-5 pt-4 overflow-y-auto pb-24">
-        {phase === "input" && <InputPhase inputValue={inputValue} setInputValue={setInputValue} onRun={handleRun} />}
-        {phase === "loading" && <LoadingPhase />}
-        {phase === "result" && <ResultPhase automations={automations} />}
+      <div className="flex-1 px-5 pt-1 overflow-y-auto pb-24">
+        {activeTab === "shortcuts" && <ShortcutsTab />}
+        {activeTab === "automation" && (
+          <>
+            {/* Header */}
+            <div className="flex items-center justify-between mb-0">
+              {phase === "result" && (
+                <button onClick={handleReset} className="text-ios-blue text-[17px] font-normal absolute right-5">
+                  +
+                </button>
+              )}
+            </div>
+            <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Automation</h1>
+            {phase === "input" && <InputPhase inputValue={inputValue} setInputValue={setInputValue} onRun={handleRun} />}
+            {phase === "loading" && <LoadingPhase />}
+            {phase === "result" && <ResultPhase automations={automations} />}
+          </>
+        )}
+        {activeTab === "gallery" && (
+          <div className="pt-4">
+            <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Gallery</h1>
+            <p className="text-muted-foreground text-[15px]">Browse shortcut collections</p>
+          </div>
+        )}
       </div>
 
       {/* Bottom Tab Bar */}
-      <BottomTabBar />
+      <BottomTabBar activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 }
@@ -217,19 +229,17 @@ function AutomationCard({ item, highlighted, inline }: { item: AutomationItem; h
   );
 }
 
-function BottomTabBar() {
+function BottomTabBar({ activeTab, onTabChange }: { activeTab: ActiveTab; onTabChange: (tab: ActiveTab) => void }) {
   return (
     <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-card/80 backdrop-blur-xl">
       <div className="flex items-end justify-around pt-2 pb-7">
-        <TabItem label="Shortcuts" active={false}>
+        <TabItem label="Shortcuts" active={activeTab === "shortcuts"} onClick={() => onTabChange("shortcuts")}>
           <BookOpen className="w-6 h-6" />
         </TabItem>
-        <TabItem label="Automation" active>
-          <div className="w-7 h-7 rounded-full bg-ios-blue flex items-center justify-center">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 7h8M7 3v8" stroke="white" strokeWidth="2" strokeLinecap="round"/></svg>
-          </div>
+        <TabItem label="Automation" active={activeTab === "automation"} onClick={() => onTabChange("automation")}>
+          <CheckSquare className="w-6 h-6" />
         </TabItem>
-        <TabItem label="Gallery" active={false}>
+        <TabItem label="Gallery" active={activeTab === "gallery"} onClick={() => onTabChange("gallery")}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l4-4 4 4 4-6 5 6"/></svg>
         </TabItem>
       </div>
@@ -237,9 +247,9 @@ function BottomTabBar() {
   );
 }
 
-function TabItem({ label, active, children }: { label: string; active: boolean; children: React.ReactNode }) {
+function TabItem({ label, active, children, onClick }: { label: string; active: boolean; children: React.ReactNode; onClick: () => void }) {
   return (
-    <button className="flex flex-col items-center gap-1">
+    <button onClick={onClick} className="flex flex-col items-center gap-1">
       <span className={active ? "text-ios-blue" : "text-muted-foreground"}>{children}</span>
       <span className={`text-[10px] font-medium ${active ? "text-ios-blue" : "text-muted-foreground"}`}>
         {label}
