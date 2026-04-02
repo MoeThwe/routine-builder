@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare } from "lucide-react";
 import ShortcutsTab from "./ShortcutsTab";
+import GalleryTab from "./GalleryTab";
 
 const EXAMPLE_PROMPT = "At 1am open ChatGPT and start a chat";
 
@@ -100,12 +101,7 @@ export default function RoutineWizard() {
             {phase === "result" && <ResultPhase automations={automations} />}
           </>
         )}
-        {activeTab === "gallery" && (
-          <div className="pt-4">
-            <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Gallery</h1>
-            <p className="text-muted-foreground text-[15px]">Browse shortcut collections</p>
-          </div>
-        )}
+        {activeTab === "gallery" && <GalleryTab />}
       </div>
 
       {/* Bottom Tab Bar */}
