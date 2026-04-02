@@ -101,12 +101,7 @@ export default function RoutineWizard() {
             {phase === "result" && <ResultPhase automations={automations} />}
           </>
         )}
-        {activeTab === "gallery" && (
-          <div className="pt-4">
-            <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Gallery</h1>
-            <p className="text-muted-foreground text-[15px]">Browse shortcut collections</p>
-          </div>
-        )}
+        {activeTab === "gallery" && <GalleryTab />}
       </div>
 
       {/* Bottom Tab Bar */}
