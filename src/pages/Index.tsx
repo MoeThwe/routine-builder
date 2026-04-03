@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare } from "lucide-react";
+import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare, Play, Pencil, Check, Zap } from "lucide-react";
 import ShortcutsTab from "./ShortcutsTab";
 import GalleryTab from "./GalleryTab";
 
@@ -46,29 +46,36 @@ type ActiveTab = "shortcuts" | "automation" | "gallery";
 export default function RoutineWizard() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("automation");
   const [inputValue, setInputValue] = useState(EXAMPLE_PROMPT);
-  const [phase, setPhase] = useState<"input" | "loading" | "result">("input");
+  const [phase, setPhase] = useState<"input" | "loading" | "preview" | "result">("input");
   const [automations, setAutomations] = useState(EXISTING_AUTOMATIONS);
+
+  const generatedAutomation = {
+    id: Date.now(),
+    triggerIcon: Moon,
+    triggerColor: "text-ios-cyan",
+    triggerBg: "bg-ios-cyan/15",
+    actionIcon: MessageSquare,
+    actionColor: "text-ios-green",
+    actionBg: "bg-ios-green/15",
+    title: "Every day at 1:00 AM",
+    subtitle: "Open ChatGPT → Start chat",
+  };
 
   const handleRun = () => {
     if (phase !== "input") return;
     setPhase("loading");
     setTimeout(() => {
-      setAutomations((prev) => [
-        {
-          id: Date.now(),
-          triggerIcon: Moon,
-          triggerColor: "text-ios-cyan",
-          triggerBg: "bg-ios-cyan/15",
-          actionIcon: MessageSquare,
-          actionColor: "text-ios-green",
-          actionBg: "bg-ios-green/15",
-          title: "Every day at 1:00 AM",
-          subtitle: "Open ChatGPT → Start chat",
-        },
-        ...prev,
-      ]);
-      setPhase("result");
+      setPhase("preview");
     }, 1200);
+  };
+
+  const handleConfirm = () => {
+    setAutomations((prev) => [generatedAutomation, ...prev]);
+    setPhase("result");
+  };
+
+  const handleFixPrompt = () => {
+    setPhase("input");
   };
 
   const handleReset = () => {
@@ -98,6 +105,7 @@ export default function RoutineWizard() {
             <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Automation</h1>
             {phase === "input" && <InputPhase inputValue={inputValue} setInputValue={setInputValue} onRun={handleRun} />}
             {phase === "loading" && <LoadingPhase />}
+            {phase === "preview" && <PreviewPhase automation={generatedAutomation} prompt={inputValue} onConfirm={handleConfirm} onFixPrompt={handleFixPrompt} />}
             {phase === "result" && <ResultPhase automations={automations} />}
           </>
         )}
@@ -162,6 +170,88 @@ function LoadingPhase() {
     <div className="animate-fade-up flex flex-col items-center pt-40 gap-4">
       <div className="w-10 h-10 rounded-full border-[3px] border-ios-blue/20 border-t-ios-blue animate-spin" />
       <p className="text-[17px] text-muted-foreground">Generating your automation…</p>
+    </div>
+  );
+}
+
+function PreviewPhase({
+  automation,
+  prompt,
+  onConfirm,
+  onFixPrompt,
+}: {
+  automation: AutomationItem;
+  prompt: string;
+  onConfirm: () => void;
+  onFixPrompt: () => void;
+}) {
+  const TriggerIcon = automation.triggerIcon;
+  const ActionIcon = automation.actionIcon;
+
+  return (
+    <div className="animate-fade-up flex flex-col pt-8 gap-5">
+      {/* Success badge */}
+      <div className="flex flex-col items-center gap-3 mb-2">
+        <div className="w-14 h-14 rounded-full bg-ios-green/15 flex items-center justify-center">
+          <Check className="w-7 h-7 text-ios-green" strokeWidth={2} />
+        </div>
+        <h2 className="text-[20px] font-bold text-foreground">Automation Ready</h2>
+        <p className="text-[14px] text-muted-foreground text-center">Review the generated automation before activating</p>
+      </div>
+
+      {/* Prompt echo */}
+      <div className="bg-card rounded-2xl border border-border p-4">
+        <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wide mb-2">Your Prompt</p>
+        <p className="text-[15px] text-foreground">&ldquo;{prompt}&rdquo;</p>
+      </div>
+
+      {/* Generated result card */}
+      <div className="bg-card rounded-2xl border border-border p-5 ring-2 ring-ios-blue/20">
+        <p className="text-[12px] font-semibold text-muted-foreground uppercase tracking-wide mb-3">Generated Automation</p>
+
+        {/* Trigger */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className={`w-11 h-11 rounded-xl ${automation.triggerBg} flex items-center justify-center`}>
+            <TriggerIcon className={`w-5 h-5 ${automation.triggerColor}`} strokeWidth={1.8} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[13px] text-muted-foreground font-medium">When</p>
+            <p className="text-[16px] font-semibold text-foreground">{automation.title}</p>
+          </div>
+        </div>
+
+        {/* Connector line */}
+        <div className="flex items-center gap-3 mb-4 pl-5">
+          <div className="w-[2px] h-6 bg-border rounded-full" />
+        </div>
+
+        {/* Action */}
+        <div className="flex items-center gap-3">
+          <div className={`w-11 h-11 rounded-xl ${automation.actionBg} flex items-center justify-center`}>
+            <ActionIcon className={`w-5 h-5 ${automation.actionColor}`} strokeWidth={1.8} />
+          </div>
+          <div className="flex-1">
+            <p className="text-[13px] text-muted-foreground font-medium">Then</p>
+            <p className="text-[16px] font-semibold text-foreground">{automation.subtitle}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Action buttons */}
+      <div className="flex flex-col gap-3 mt-2">
+        <button
+          onClick={onConfirm}
+          className="w-full bg-ios-blue text-primary-foreground text-[17px] font-semibold py-4 rounded-2xl flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
+        >
+          <Play className="w-5 h-5" fill="currentColor" /> Activate Automation
+        </button>
+        <button
+          onClick={onFixPrompt}
+          className="w-full bg-card text-ios-blue text-[17px] font-semibold py-4 rounded-2xl border border-border flex items-center justify-center gap-2 active:opacity-80 transition-opacity"
+        >
+          <Pencil className="w-4 h-4" /> Fix Prompt
+        </button>
+      </div>
     </div>
   );
 }
