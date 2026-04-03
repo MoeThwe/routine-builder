@@ -256,7 +256,7 @@ function PreviewPhase({
   );
 }
 
-
+interface AutomationItem {
   id: number;
   triggerIcon: React.ElementType;
   triggerColor: string;
