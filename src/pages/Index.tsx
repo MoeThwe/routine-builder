@@ -46,29 +46,35 @@ type ActiveTab = "shortcuts" | "automation" | "gallery";
 export default function RoutineWizard() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("automation");
   const [inputValue, setInputValue] = useState(EXAMPLE_PROMPT);
-  const [phase, setPhase] = useState<"input" | "loading" | "result">("input");
-  const [automations, setAutomations] = useState(EXISTING_AUTOMATIONS);
+  const [phase, setPhase] = useState<"input" | "loading" | "preview" | "result">("input");
+
+  const generatedAutomation = {
+    id: Date.now(),
+    triggerIcon: Moon,
+    triggerColor: "text-ios-cyan",
+    triggerBg: "bg-ios-cyan/15",
+    actionIcon: MessageSquare,
+    actionColor: "text-ios-green",
+    actionBg: "bg-ios-green/15",
+    title: "Every day at 1:00 AM",
+    subtitle: "Open ChatGPT → Start chat",
+  };
 
   const handleRun = () => {
     if (phase !== "input") return;
     setPhase("loading");
     setTimeout(() => {
-      setAutomations((prev) => [
-        {
-          id: Date.now(),
-          triggerIcon: Moon,
-          triggerColor: "text-ios-cyan",
-          triggerBg: "bg-ios-cyan/15",
-          actionIcon: MessageSquare,
-          actionColor: "text-ios-green",
-          actionBg: "bg-ios-green/15",
-          title: "Every day at 1:00 AM",
-          subtitle: "Open ChatGPT → Start chat",
-        },
-        ...prev,
-      ]);
-      setPhase("result");
+      setPhase("preview");
     }, 1200);
+  };
+
+  const handleConfirm = () => {
+    setAutomations((prev) => [generatedAutomation, ...prev]);
+    setPhase("result");
+  };
+
+  const handleFixPrompt = () => {
+    setPhase("input");
   };
 
   const handleReset = () => {
