@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare, Play, Pencil, Check, Zap } from "lucide-react";
 import ShortcutsTab from "./ShortcutsTab";
 import GalleryTab from "./GalleryTab";
+import PrivacyAgreement from "./PrivacyAgreement";
 
 const EXAMPLE_PROMPT = "At 1am open ChatGPT and start a chat";
 
