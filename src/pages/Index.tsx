@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare, Play, Pencil, Check, Zap } from "lucide-react";
 import ShortcutsTab from "./ShortcutsTab";
 import GalleryTab from "./GalleryTab";
