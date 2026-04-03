@@ -104,7 +104,7 @@ export default function RoutineWizard() {
             </div>
             <h1 className="text-[34px] font-bold tracking-tight text-foreground mb-4">Automation</h1>
             {phase === "input" && <InputPhase inputValue={inputValue} setInputValue={setInputValue} onRun={handleRun} />}
-            {phase === "loading" && <LoadingPhase />}
+            {phase === "preview" && <PreviewPhase automation={generatedAutomation} prompt={inputValue} onConfirm={handleConfirm} onFixPrompt={handleFixPrompt} />}
             {phase === "result" && <ResultPhase automations={automations} />}
           </>
         )}
