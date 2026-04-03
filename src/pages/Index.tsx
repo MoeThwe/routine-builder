@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Mic, ChevronRight, Moon, BookOpen, MessageSquare, ArrowRight, Sparkles, Clock, Music, MapPin, Wifi, BedDouble, CheckSquare, Play, Pencil, Check, Zap } from "lucide-react";
 import ShortcutsTab from "./ShortcutsTab";
 import GalleryTab from "./GalleryTab";
+import PrivacyAgreement from "./PrivacyAgreement";
 
 const EXAMPLE_PROMPT = "At 1am open ChatGPT and start a chat";
 
@@ -44,10 +45,20 @@ const EXISTING_AUTOMATIONS = [
 type ActiveTab = "shortcuts" | "automation" | "gallery";
 
 export default function RoutineWizard() {
+  const [accepted, setAccepted] = useState(() => localStorage.getItem("rw_terms_accepted") === "true");
   const [activeTab, setActiveTab] = useState<ActiveTab>("automation");
   const [inputValue, setInputValue] = useState(EXAMPLE_PROMPT);
   const [phase, setPhase] = useState<"input" | "loading" | "preview" | "result">("input");
   const [automations, setAutomations] = useState(EXISTING_AUTOMATIONS);
+
+  const handleAccept = () => {
+    localStorage.setItem("rw_terms_accepted", "true");
+    setAccepted(true);
+  };
+
+  if (!accepted) {
+    return <PrivacyAgreement onAccept={handleAccept} />;
+  }
 
   const generatedAutomation = {
     id: Date.now(),
