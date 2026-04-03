@@ -47,6 +47,7 @@ export default function RoutineWizard() {
   const [activeTab, setActiveTab] = useState<ActiveTab>("automation");
   const [inputValue, setInputValue] = useState(EXAMPLE_PROMPT);
   const [phase, setPhase] = useState<"input" | "loading" | "preview" | "result">("input");
+  const [automations, setAutomations] = useState(EXISTING_AUTOMATIONS);
 
   const generatedAutomation = {
     id: Date.now(),
